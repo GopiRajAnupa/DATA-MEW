@@ -1,0 +1,98 @@
+       ExecuteAndPrint("step1 of 3 Add untracked files", "add -all");
+
+            ExecuteAndPrint("step2 of 3 commit all", "commit -a -m \"Test\"");
+
+            ExecuteAndPrint("step3 of 3:Push!", "Push");
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace GITWORKS
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            AppContext.SetSwitch("MyCustomSwitch", isEnabled: false);
+            new EnvironmentAndAppcontext().Run();
+
+            GitClient gitClient = new GitClient();
+            gitClient.run();
+
+
+            Console.ReadLine();
+        }
+    }
+
+    class GitClient
+    {
+        public void run()
+        {
+            Console.WindowWidth = Console.LargestWindowWidth;
+            Console.WindowHeight = Console.LargestWindowHeight;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.Gray;
+            ExecuteAndPrint("step1 of 3 Add untracked files", "add -all");
+            ExecuteAndPrint("step2 of 3 commit all", "commit -a -m \"Test\"");
+            ExecuteAndPrint("step3 of 3:Push!", "Push");
+
+        }
+        static void ExecuteAndPrint(string stepDescription, string gitcommand)
+        {
+            updateButtomstatus(stepDescription);
+            Execute(gitcommand);
+
+        }
+        static void updateButtomstatus(string stepDescription)
+        {
+            Console.CursorTop = Console.WindowHeight - 1;
+            Console.CursorLeft = 0;
+            Console.Write(stepDescription.PadRight(Console.WindowWidth));
+            Console.CursorTop = 0;
+            Console.CursorLeft = 0;
+        }
+        static void Execute(string gitcommand)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = gitcommand,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+            };
+            try
+            { 
+            Process gitprocess = Process.Start(startInfo);
+            Console.WriteLine(gitprocess.StandardOutput.ReadToEnd());
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+    }
+
+    class EnvironmentAndAppcontext
+    {
+        public void Run()
+        {
+            Console.WriteLine(Environment.CurrentDirectory);
+            Console.WriteLine(Environment.ProcessorCount);
+            Console.WriteLine(Environment.StackTrace);
+        }
+    }
+
+}
